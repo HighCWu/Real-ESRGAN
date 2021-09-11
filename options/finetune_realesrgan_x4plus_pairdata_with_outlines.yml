@@ -53,7 +53,7 @@ network_g:
   num_feat: 64
   num_block: 23
   num_grow_ch: 32
-  num_ol_ch: 1
+  num_ol_ch: 16 # real ol channel = 1, scale = 4, space to depth => 1 * 4^2
 
 
 network_d:
