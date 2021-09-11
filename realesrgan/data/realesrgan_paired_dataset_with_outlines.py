@@ -146,12 +146,12 @@ class RealESRGANPairedDatasetWithOutlines(data.Dataset):
 
         # add noise to outlines image
         if random.random() < 0.5:
-            img_ol = img_ol * 0 + 1
-        if random.random() < 0.5:
             temp = random.uniform(0.01,0.2)
             img_ol = img_ol + temp * (np.random.randn(*img_ol.shape) + 1) / 2
         if random.random() < 0.5:
             img_ol = (img_ol + random.uniform(-1.,1.)) * random.uniform(0.5,2.)
+        if random.random() < 0.5:
+            img_ol = img_ol * 0 + 1
 
         # BGR to RGB, HWC to CHW, numpy to tensor
         img_gt, img_lq, img_ol = img2tensor([img_gt, img_lq, img_ol], bgr2rgb=True, float32=True)

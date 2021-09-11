@@ -140,7 +140,7 @@ class RealESRGANer():
         return self.output
 
     @torch.no_grad()
-    def enhance(self, img, outscale=None, alpha_upsampler='realesrgan'):
+    def enhance(self, img, outscale=None, alpha_upsampler='realesrgan', img_ol=None):
         h_input, w_input = img.shape[0:2]
         # img: numpy
         img = img.astype(np.float32)
@@ -164,6 +164,12 @@ class RealESRGANer():
             img_mode = 'RGB'
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+        if img_ol is not None:
+            # img_ol: numpy
+            img_ol = img_ol.astype(np.float32)
+            img_ol = img_ol / max_range
+            img = np.concatenate([img, img_ol], -1)
+
         # ------------------- process image (without the alpha channel) ------------------- #
         self.pre_process(img)
         if self.tile_size > 0:
@@ -179,6 +185,8 @@ class RealESRGANer():
         # ------------------- process the alpha channel if necessary ------------------- #
         if img_mode == 'RGBA':
             if alpha_upsampler == 'realesrgan':
+                if img_ol is not None:
+                    alpha = np.concatenate([alpha, img_ol], -1)
                 self.pre_process(alpha)
                 if self.tile_size > 0:
                     self.tile_process()
