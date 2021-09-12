@@ -76,18 +76,18 @@ def main():
         img_ol = cv2.imread(path_ol, cv2.IMREAD_GRAYSCALE)[...,None]
         scale = args.outscale
         if scale != 1:
-            b,c,h,w = img_ol.shape
+            h,w = img_ol.shape[:2]
             hf = h // scale
             wf = w // scale
             img_ol = np.reshape(
                 np.transpose(
                     np.reshape(
                         img_ol,
-                        [b,hf,scale,wf,scale]
+                        [hf,scale,wf,scale]
                     ),
-                    [0,1,3,2,4]
+                    [0,2,1,3]
                 ),
-                [b,hf,wf,-1]
+                [hf,wf,-1]
             )
 
         h, w = img.shape[0:2]

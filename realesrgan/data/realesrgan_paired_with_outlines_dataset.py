@@ -12,7 +12,7 @@ from torchvision.transforms.functional import normalize
 
 
 @DATASET_REGISTRY.register()
-class RealESRGANPairedDatasetWithOutlines(data.Dataset):
+class RealESRGANPairedWithOutlinesDataset(data.Dataset):
     """Paired image dataset for image restoration.
 
     Read LQ (Low Quality, e.g. LR (Low Resolution), blurry, noisy, etc) and
@@ -46,7 +46,7 @@ class RealESRGANPairedDatasetWithOutlines(data.Dataset):
     """
 
     def __init__(self, opt):
-        super(RealESRGANPairedDatasetWithOutlines, self).__init__()
+        super(RealESRGANPairedWithOutlinesDataset, self).__init__()
         self.opt = opt
         # file client (io backend)
         self.file_client = None
@@ -103,7 +103,7 @@ class RealESRGANPairedDatasetWithOutlines(data.Dataset):
             img_ol = imfrombytes(img_bytes, flag='grayscale', float32=True)[...,None]
         else:
             _, w = img_gt.shape[:2]
-            img_gt, img_ol = img_gt[:,:w//2], img_ol[:,w//2:]
+            img_gt, img_ol = img_gt[:,:w//2], img_gt[:,w//2:]
             img_ol = 0.114 * img_ol[...,0:1] + 0.587 * img_ol[...,1:2] + 0.299 * img_ol[...,2:3] # BGR to Gray
             if lq_path == gt_path:
                 img_lq = img_gt
@@ -130,18 +130,18 @@ class RealESRGANPairedDatasetWithOutlines(data.Dataset):
         img_gt, img_ol = img_gt[...,:3], img_gt[...,3:]
 
         if scale != 1:
-            b,c,h,w = img_ol.shape
+            h,w = img_ol.shape[:2]
             hf = h // scale
             wf = w // scale
             img_ol = np.reshape(
                 np.transpose(
                     np.reshape(
                         img_ol,
-                        [b,hf,scale,wf,scale]
+                        [hf,scale,wf,scale]
                     ),
-                    [0,1,3,2,4]
+                    [0,2,1,3]
                 ),
-                [b,hf,wf,-1]
+                [hf,wf,-1]
             )
 
         # add noise to outlines image
