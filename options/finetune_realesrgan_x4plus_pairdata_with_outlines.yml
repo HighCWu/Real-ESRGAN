@@ -26,7 +26,8 @@ datasets:
 
     gt_size: 256
     use_hflip: True
-    use_rot: False
+    use_rot: false
+    pre_scale: 1 # if gt size is not scaled size of lq, scale lq.
 
     # data loader
     use_shuffle: true
